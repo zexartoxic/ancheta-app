@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Anchetas</title>
+	<link rel="stylesheet" type="text/css" href="css/jquery.ui.css"/>
+	<script type="text/javascript" src="../vista/lib/jquery.1.7.1.js"></script>
+  <script type="text/javascript" src="../vista/lib/jquery.ui.1.8.16.js"></script>
+  <!--<script type="text/javascript" src="js/inventario.js"></script>-->
+</head>
+<body>
+	<div class="barra"><span>cerrar session</span></div>
+	<div class="contenedor">
+	<div class="titulo">
+		<h1>Anchetas</h1>
+		<p class="descripcion">en este modulo admistraras todo.</p>
+	</div>
+	<div class="guia"><h2>Que Deseas Hacer?</h2></div>
+	<nav>
+		<ul class="menu">
+			<li class="item1"><a class="link" href="#">Crear Ancheta</a></li>
+			<li class="item2"><a class="link" href="#">Ver Inventario</a></li>
+			<li class="item3"><a class="link" href="#">Ventas</a></li>
+			<li class="item4"><a class="link" href="#">Ver Gastos y Ganancias</a></li>
+		</ul>
+	</nav>
+	<section class="post">
+		<!--<article class="ancheta">
+			<div class="titulos">
+				<h1>Diseñar Una Ancheta</h1>
+				<p class="descripcion">Aqui Armas tu Ancheta</p>
+			</div>
+			<table>
+				<tr><td><form action="accion.php" method="post"></td></tr>
+				<tr><td><label>Nombre de Ancheta: </label><input name="nombre" type="text" id="nombre"size="40"/></td></tr>
+				<tr><td><label>Producto: </label><input id="txtProducto" type="text" size="40"/></td>
+					<td><button id="botonagregar"  onclick = "agregar()">agregar</button> <select id="agregados"></select></td>
+				</tr>
+				<tr><td><label>total de productos: </label><input id="txtProducto" type="text" size="40"/></td></td></tr>
+				<tr><td><label>total costo: </label><input id="txtProducto" type="text" size="40"/></td></td></tr>
+				<tr><td><label>Precio Final: </label><input id="txtProducto" type="text" size="40"/></td></td></tr>
+				<tr><td><p>Sale mensaje con todos los productos y confirmar</p></td></tr>
+		 		<tr><td><p><input type="submit"/></p></td></tr>
+				<tr><td></form></td></tr>
+			</table>
+			<div class="detalle"><a href="#">Deceas Ver todas las anchetas?</a></div>
+		</article>
+		<hr>-->
+		<article class="Inventario">
+			<div class="titulos">
+				<h1>Inventario</h1>
+				<p class="descripcion">Aqui puedes ver todos los productos</p>
+			</div>
+			<table>
+				<tr><td><form action="../modelo/inventario.php" method="post"></td></tr>
+				<tr><td><label>Producto: </label><input id="txtProducto" type="text" size="40"/></td>
+					<td><button id="btm-modificar"  onclick = "modificar()">modificar?</button></td>
+					<td><button id="btm-eliminar"  onclick = "eliminar()">Eliminar?</button></td>
+				</tr>
+				<tr><td><label>Precio: </label><input name="nombre" type="text" id="txtprecio"size="40"/></td></tr>
+				<tr><td><label>Categoria: </label><select id="categoria">
+					<option value="dulce">Dulces</option><option value="licor">Licores</option><option value="otro">Otros</option>
+					</select></td></td></tr>
+		 		<tr><td><input type="submit" value="Guardar"/></td></tr>
+				<tr><td></form></td></tr>
+			</table>
+			<div class="detalle"><a href="#">Deceas Ver todos los productos?</a></div>
+		</article>
+		<script type="text/javascript">
+			// esta rutina se ejecuta cuando jquery esta listo para trabajar
+			$(function() 
+			{
+				// configuramos el control para realizar la busqueda de los productos
+				$("#txtProducto").autocomplete({
+					source: "../modelo/inventario.php", 				/* este es el formulario que realiza la busqueda */
+					minLength: 1,									/* le decimos que espere hasta que haya 2 caracteres escritos */
+					select: productoSeleccionado,	/* esta es la rutina que extrae la informacion del registro seleccionado */
+					focus: productoMarcado
+				});
+			});
+			
+			// tras seleccionar un producto, calculamos el importe correspondiente
+			function productoMarcado(event, ui)
+			{
+				var producto = ui.item.value;
+				
+				// no quiero que jquery maneje el texto del control porque no puede manejar objetos, 
+				// asi que escribimos los datos nosotros y cancelamos el evento
+				// (intenta comentando este codigo para ver a que me refiero)
+				$("#txtProducto").val(producto.descripcion);
+				event.preventDefault();
+			}
+			
+			// tras seleccionar un producto, calculamos el importe correspondiente
+			function productoSeleccionado(event, ui)
+			{
+				var producto = ui.item.value;
+				var precio = producto.precio;
+
+				// actualizamos los datos en el formulario
+				$("#txtprecio").val(producto.precio);
+				
+				// no quiero que jquery maneje el texto del control porque no puede manejar objetos, 
+				// asi que escribimos los datos nosotros y cancelamos el evento
+				// (intenta comentando este codigo para ver a que me refiero)
+				$("#txtProducto").val(producto.descripcion);
+				event.preventDefault();
+			}
+		</script>
+		<!--
+		<hr>
+		<article class="Ventas">
+			<div class="titulos">
+				<h1>Ventas</h1>
+				<p class="descripcion">Aqui puedes ver todas las ventas</p>
+			</div>
+			<table>
+				<tr><td><form action="accion.php" method="post"></td></tr>
+				<tr><td><label>Fecha de Venta</label><input name="nombre" type="text" id="nombre"size="40"/></td></tr>
+				<tr><td><label>Nombre de ancheta: </label><input id="txtProducto" type="text" size="40"/></td>
+					<td><button id="botonagregar"  onclick = "agregar()">agregar</button> <select id="agregados"></select></td>
+				</tr>
+				<tr><td><label>Precio Final:</label><input id="txtProducto" type="text" size="40"/></td></td></tr>
+				<tr><td><p>Sale mensaje en caso de que la ancheta ya se haya vendido y confirmar</p></td></tr>
+		 		<tr><td><p><input type="submit"/></p></td></tr>
+				<tr><td></form></td></tr>
+			</table>
+		</article>
+		<hr>
+		<article class="estadisticas">
+			<div class="titulos">
+				<h1>Estadisticas</h1>
+				<p class="descripcion">Aqui puedes ver estadisticas</p>
+			</div>
+			<table>
+				<tr><td><form action="accion.php" method="post"></td></tr>
+				<tr><td><label>Total de Ventas</label><input name="nombre" type="text" id="nombre"size="40"/></td></tr>
+				<tr><td><label>Total de anchetas registradas</label><input name="nombre" type="text" id="nombre"size="40"/></td></tr>
+				<tr><td><label>Total de productos</label><input name="nombre" type="text" id="nombre"size="40"/></td></tr>
+			<tr><td><label>Total de gastos de Fabricacion</label><input name="nombre" type="text" id="nombre"size="40"/></td></tr>
+				<tr><td><label>Total de inversion</label><input name="nombre" type="text" id="nombre"size="40"/></td></tr>
+				<tr><td><label>Total de ganancias</label><input name="nombre" type="text" id="nombre"size="40"/></td></tr>
+		 		<tr><td><p><input type="submit"/></p></td></tr>
+				<tr><td></form></td></tr>
+			</table>
+			<div class="detalle"><a href="#">ver anchetas que aun nose han vendido?</a></div>
+		</article>-->
+	</section>
+	</div>
+</body>
+</html>
