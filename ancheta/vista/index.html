@@ -51,61 +51,85 @@
 				<h1>Inventario</h1>
 				<p class="descripcion">Aqui puedes ver todos los productos</p>
 			</div>
-			<table>
-				<tr><td><form action="../modelo/inventario.php" method="post"></td></tr>
-				<tr><td><label>Producto: </label><input id="txtProducto" type="text" size="40"/></td>
-					<td><button id="btm-modificar"  onclick = "modificar()">modificar?</button></td>
-					<td><button id="btm-eliminar"  onclick = "eliminar()">Eliminar?</button></td>
-				</tr>
-				<tr><td><label>Precio: </label><input name="nombre" type="text" id="txtprecio"size="40"/></td></tr>
-				<tr><td><label>Categoria: </label><select id="categoria">
-					<option value="dulce">Dulces</option><option value="licor">Licores</option><option value="otro">Otros</option>
-					</select></td></td></tr>
-		 		<tr><td><input type="submit" value="Guardar"/></td></tr>
-				<tr><td></form></td></tr>
-			</table>
+			<div class="contenido">	
+				<form method="post" id="formulario">
+					<table>
+						<tr><td><label for="producto">Producto:</label></td><td><input type="search" name="producto" id="producto"></td>
+								<td><button id="btm-modificar" onclick = "modificar()">modificar?</button></td>
+								<td><button id="btm-eliminar" onclick = "eliminar()">Eliminar?</button></td>
+						</tr>
+						<tr>
+							<td><label for="precio">Precio:</label></td><td><input name="precio" type="text" id="txtprecio"/></td>
+						</tr>
+						<tr>
+							<td><label for="list">Categoria:</label></td>
+							<td>
+								<input list="categoria" name="list" id="categorias" />
+								<datalist id="categoria">
+								    <option label="dulces" value="dulces">
+								    <option label="licor" value="licor">
+								    <option label="otro" value="otro">	
+								</datalist>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="codigo">Codigo</label></td>
+							<td>
+								<input type="number" name="codigo" id="txtcodigo"  required />
+							</td>
+						</tr>
+				 		<tr><td><input type="button" value="guardar" id="btn_enviar"></td></tr>
+			 		</table>
+				</form>
+			</div>
+			<div id="respuesta"></div>
 			<div class="detalle"><a href="#">Deceas Ver todos los productos?</a></div>
+
 		</article>
+		<script>
+		// Con esta Funcion hacemos que  guarde   
+			$(function(){
+			 $("#btn_enviar").click(function(){
+			 var url = "../modelo/inventario.php"; // El script a dónde se realizará la petición.
+			    $.ajax({
+			           type: "POST",
+			           url: url,
+			           data: $("#formulario").serialize(), // Adjuntar los campos del formulario enviado.
+			           success: function(data)
+			           {
+			               $("#respuesta").html(data); // Mostrar la respuestas del script PHP.
+			           }
+			         });
+			 
+			    return false; // Evitar ejecutar el submit del formulario.
+			 });
+			});
+		</script>
+
 		<script type="text/javascript">
 			// esta rutina se ejecuta cuando jquery esta listo para trabajar
-			$(function() 
+			$(document).ready(function()
 			{
 				// configuramos el control para realizar la busqueda de los productos
-				$("#txtProducto").autocomplete({
-					source: "../modelo/inventario.php", 				/* este es el formulario que realiza la busqueda */
-					minLength: 1,									/* le decimos que espere hasta que haya 2 caracteres escritos */
-					select: productoSeleccionado,	/* esta es la rutina que extrae la informacion del registro seleccionado */
-					focus: productoMarcado
+				$("#producto").autocomplete({
+					source: "../modelo/buscarInventario.php", 				
+					minLength: 2,									
 				});
 			});
-			
-			// tras seleccionar un producto, calculamos el importe correspondiente
-			function productoMarcado(event, ui)
-			{
-				var producto = ui.item.value;
-				
-				// no quiero que jquery maneje el texto del control porque no puede manejar objetos, 
-				// asi que escribimos los datos nosotros y cancelamos el evento
-				// (intenta comentando este codigo para ver a que me refiero)
-				$("#txtProducto").val(producto.descripcion);
-				event.preventDefault();
-			}
-			
-			// tras seleccionar un producto, calculamos el importe correspondiente
-			function productoSeleccionado(event, ui)
-			{
-				var producto = ui.item.value;
-				var precio = producto.precio;
 
-				// actualizamos los datos en el formulario
-				$("#txtprecio").val(producto.precio);
-				
-				// no quiero que jquery maneje el texto del control porque no puede manejar objetos, 
-				// asi que escribimos los datos nosotros y cancelamos el evento
-				// (intenta comentando este codigo para ver a que me refiero)
-				$("#txtProducto").val(producto.descripcion);
-				event.preventDefault();
-			}
+			$("#producto").focusout(function(){
+		        $.ajax({
+		            url:'../modelo/enviarInventario.php',
+		            type:'POST',
+		            dataType:'json',
+		            data:{ matricula:$('#producto').val()}
+		        }).done(function(respuesta){
+		            $("#txtprecio").val(respuesta.precio);
+		            $("#categorias").val(respuesta.categoria);
+		            $("#txtcodigo").val(respuesta.codigo);
+		        });
+    		});
+		
 		</script>
 		<!--
 		<hr>

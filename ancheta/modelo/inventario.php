@@ -1,41 +1,43 @@
 <?php
 
-include "../modelo/zeion.db.php";
-
-// recuperamos el criterio de la busqueda
-$criterio = strtolower($_GET["term"]);
-if (!$criterio) return;
-
-print '['; // <<<< observa que aquí comienza la definición de nuestro resultado
-
-// creamos una conexión a la base de datos en modo persistente, de esta manera
-// las siguientes consultas tardarán menos en ejecutarse
-// (los datos de la cadena de conexión son usuario:contraseña@servidor/basededatos)
-$db = new zeion_db('development:development@localhost/demos', true);
+$conexion = mysql_connect("localhost","root","");
+$bd = mysql_select_db("demos");
 
 
-		
-	$db-> mysql_query("INSERT INTO `comentarios`.`tblcomentario` (`id`, `nombre`, `email`, `comentario`) VALUES (NULL, '$this->nombre', '$this->correo', '$this->comentario');");
-						
+$resultado = "";
+$producto = addslashes(htmlspecialchars($_POST["producto"]));
+$precio = addslashes(htmlspecialchars($_POST["precio"]));
+$categoria = addslashes(htmlspecialchars($_POST["list"]));
+$codigo = addslashes(htmlspecialchars($_POST["codigo"]));
 
 
-// ejecutamos nuestra consulta para recuperar todos los registros de cédula
-// que cumplan con el criterio especificado
-if ( $db->select('tbl_dulces', '*', "nombre like '%" . $db->safe( $criterio ) . "%'") )
+//aqui es para guardar
+if ($producto!= "" && $precio!= "" && $categoria != "")
 {
-	$contador = 0;
-	while ( $cedula = $db->fetch_row() ) // recupera el siguiente registro
+	$checkproducto = mysql_query("SELECT nombre FROM tbl_productos WHERE nombre='$producto'");
+	$check_producto = mysql_num_rows($checkproducto);
+	
+	$checkcodigo = mysql_query("SELECT codigo FROM tbl_productos WHERE codigo='$codigo'");
+	$check_codigo = mysql_num_rows($checkcodigo);
+	
+	if($check_producto>0 || $check_codigo>0)
 	{
-		if ($contador++ > 0) print ", "; // agregamos una coma entre cada registro
-			
-		// las rutinas de autcompletado de jQuery esperan que cada registro contenga los siguientes datos:
-		// registro {
-		//   label : "el texto que se desea desplegar en el control",
-		//   value : { un objeto o cadena con los datos reales del registro }
-		// }
-		print "{ \"label\" : \"$cedula[nombre]\", \"value\" : { \"id\" : $cedula[id], \"descripcion\" : \"$cedula[nombre]\" } }";
-	} // siguiente registro
+		echo $resultado = "<p>El Producto:".$producto." o Codigo :".$codigo." ya esta en uso</p>";
+	}
+	
+	else
+	{
+		mysql_query("INSERT INTO tbl_productos VALUES(null,'$codigo','$producto','$precio','$categoria')");
+		echo $resultado = "<p>El Producto: ".$producto." Se Agrego</p>";
+
+	}
 }
 
-print ']'; // <<<< observa que aquí termina la definición de nuestro resultado
+else
+{
+	echo $resultado = "<p>Algunos campos estan vacios</p>";
+	 
+}
+
 ?>
+
